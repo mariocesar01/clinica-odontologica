@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Procedimentos</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1>Procedimentos</h1>
+<p><a class="action-link" th:href="@{/procedimentos/novo}">Cadastrar procedimento</a> | <a th:href="@{/home}">Início</a></p>
+<p th:if="${mensagem}" th:text="${mensagem}"></p>
+<p th:if="${mensagemErro}" th:text="${mensagemErro}"></p>
+<form th:action="@{/procedimentos/pesquisar}" method="get">
+    <label>Pesquisar por nome:</label><input type="text" name="nome" th:value="${nomePesquisa}">
+    <button type="submit">Pesquisar</button> <a th:href="@{/procedimentos}">Limpar</a>
+</form><hr>
+<p th:if="${#lists.isEmpty(procedimentos)}">Nenhum procedimento cadastrado.</p>
+<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(procedimentos)}">
+<thead><tr><th>ID</th><th>Nome</th><th>Descrição</th><th>Valor</th><th>Duração</th><th>Ativo</th><th>Ações</th></tr></thead>
+<tbody><tr th:each="p : ${procedimentos}">
+    <td th:text="${p.id}"></td><td th:text="${p.nome}"></td><td th:text="${p.descricao}"></td>
+    <td th:text="${p.valor}"></td><td th:text="${p.duracaoMinutos + ' min'}"></td><td th:text="${p.ativo ? 'Sim' : 'Não'}"></td>
+    <td><a th:href="@{/procedimentos/editar/{id}(id=${p.id})}">Editar</a>
+        <form th:action="@{/procedimentos/excluir/{id}(id=${p.id})}" method="post" style="display:inline">
+            <button type="submit" onclick="return confirm('Deseja excluir este procedimento?')">Excluir</button>
+        </form></td>
+</tr></tbody>
+</table>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

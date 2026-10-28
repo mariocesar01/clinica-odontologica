@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="refresh" content="30"><title>Andamento • OdontoCare</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="with-shell"><div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout"><div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace"><div th:replace="~{fragments/shell :: topbar}"></div><div class="page-content">
+  <h1>Andamento das consultas</h1><p th:text="|Acompanhamento de ${#temporals.format(dia,'dd/MM/yyyy')}|">Hoje</p>
+  <section class="section-panel" style="max-width:750px"><div class="panel-head"><h2>Progresso do dia</h2><strong style="font-size:21px;color:#0b8d88" th:text="|${progresso}%|">0%</strong></div>
+    <div class="stats-progress"><span th:style="|width:${progresso}%|"></span></div><div class="stat-details"><span>Consultas programadas</span><span th:text="|${#lists.size(atendimentos)} atendimentos|">0 atendimentos</span></div>
+  </section>
+  <section class="section-panel"><div class="panel-head"><h2>Fila de atendimento</h2><span class="section-kicker">Atualiza a cada 30 segundos</span></div>
+    <div id="erro-chegada" role="alert" class="message-banner error" style="display:none"></div>
+    <p class="empty-state" th:if="${#lists.isEmpty(atendimentos)}">Nenhum atendimento programado para hoje.</p>
+    <table th:if="${!#lists.isEmpty(atendimentos)}"><thead><tr><th>Horário</th><th>Paciente</th><th>Dentista</th><th>Procedimento</th><th>Etapa</th><th>Progresso</th><th>Ação</th></tr></thead>
+      <tbody><tr th:each="a : ${atendimentos}"><td th:text="${a.hora}"></td><td th:text="${a.paciente}"></td><td th:text="${a.dentista}"></td><td th:text="${a.procedimento}"></td><td th:text="${a.status}"></td>
+      <td><div class="row-progress"><div><span th:style="|width:${a.progresso}%|"></span></div><small th:text="|${a.progresso}%|"></small></div></td>
+      <td><button type="button" th:if="${a.status == 'AGENDADA' or a.status == 'CONFIRMADA'}" th:attr="data-consulta=${a.id}" onclick="registrarChegada(this)">Registrar chegada</button><span th:if="${a.status != 'AGENDADA' and a.status != 'CONFIRMADA'}">—</span></td>
+      </tr></tbody></table>
+  </section>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div><script th:src="@{/js/app.js}" defer></script>
+<script>
+async function registrarChegada(botao){
+  botao.disabled=true;
+  try {
+    const resposta=await fetch('/api/recepcao/consultas/'+botao.dataset.consulta+'/chegada',{method:'POST',credentials:'same-origin'});
+    if(!resposta.ok){let mensagem='Não foi possível registrar a chegada.';
+      try {const erro=await resposta.json();mensagem=erro.erro||erro.message||mensagem;}
+      catch(_){if(resposta.status===401)mensagem='Sua sessão expirou. Entre novamente.';else mensagem+=' (HTTP '+resposta.status+')';}
+      throw new Error(mensagem);
+    }
+    location.reload();
+  } catch(e){const bloco=document.getElementById('erro-chegada');bloco.textContent=e.message;bloco.style.display='block';botao.disabled=false;bloco.scrollIntoView({block:'nearest'});}
+}
+</script></body></html>

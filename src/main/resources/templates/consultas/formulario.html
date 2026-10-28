@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Consulta</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1 th:text="${consultaForm.id == null ? 'Confirmar agendamento' : 'Editar consulta'}"></h1>
+<p th:if="${mensagemErro}" th:text="${mensagemErro}"></p>
+
+<form th:action="@{/consultas/salvar}" th:object="${consultaForm}" method="post" class="record-form">
+    <input type="hidden" th:field="*{id}">
+    <input type="hidden" th:field="*{dentistaId}">
+    <input type="hidden" th:field="*{procedimentoId}">
+    <input type="hidden" th:field="*{dataHora}">
+
+    <p><strong>Dentista:</strong> <span th:text="${dentistaSelecionado != null ? dentistaSelecionado.usuario.nome : '-'}"></span></p>
+    <p><strong>Procedimento:</strong>
+        <span th:text="${procedimentoSelecionado != null ? procedimentoSelecionado.nome : '-'}"></span>
+        <span th:if="${procedimentoSelecionado != null}" th:text="${' (' + procedimentoSelecionado.duracaoMinutos + ' minutos)'}"></span>
+    </p>
+    <p><strong>Início:</strong> <span th:text="${consultaForm.dataHora != null ? #temporals.format(consultaForm.dataHora, 'dd/MM/yyyy HH:mm') : '-'}"></span></p>
+
+    <p><label>Paciente:</label><br>
+        <select th:field="*{pacienteId}" required>
+            <option value="">Selecione</option>
+            <option th:each="p : ${pacientes}" th:value="${p.id}" th:text="${p.usuario.nome + ' - CPF ' + p.cpf}"></option>
+        </select>
+    </p>
+    <p th:if="${#fields.hasErrors('pacienteId')}" th:errors="*{pacienteId}"></p>
+
+    <p><label>Status:</label><br>
+        <select th:field="*{status}">
+            <option th:each="s : ${statusConsulta}" th:value="${s}" th:text="${s}"></option>
+        </select>
+    </p>
+
+    <p><label>Observações:</label><br><textarea th:field="*{observacoes}" rows="4" cols="50"></textarea></p>
+    <button type="submit">Salvar</button> <a th:href="@{/agenda}">Cancelar</a>
+</form>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

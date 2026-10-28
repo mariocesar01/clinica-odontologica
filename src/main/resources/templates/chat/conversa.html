@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mensagens • OdontoCare</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="with-shell"><div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout"><div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace"><div th:replace="~{fragments/shell :: topbar}"></div><div class="page-content">
+  <h1>Mensagens</h1><p th:text="${recepcao ? 'Conversa com ' + conversa.paciente.usuario.nome : 'Atendimento com a recepção'}">Conversa</p>
+  <div th:if="${erro}" class="message-banner error" th:text="${erro}"></div>
+  <section class="section-panel chat-panel"><div class="panel-head"><h2 th:text="${recepcao ? conversa.paciente.usuario.nome : 'Recepção da clínica'}">Conversa</h2><a th:href="${recepcao} ? @{/chat/conversas} : @{/home}">Voltar</a></div>
+    <div class="chat-mensagens" id="chat-mensagens" aria-live="polite" th:attr="data-conversa-id=${conversa.id},data-usuario-id=${usuario.id}">
+      <article th:each="m : ${mensagens}" th:class="${m.remetente.id == usuario.id ? 'chat-mensagem own' : 'chat-mensagem'}"><strong th:text="${m.remetente.nome}"></strong><small th:text="${#temporals.format(m.enviadaEm,'dd/MM/yyyy HH:mm')}"></small><p th:text="${m.texto}"></p></article>
+      <p th:if="${#lists.isEmpty(mensagens)}" id="sem-mensagens" class="empty-state">Nenhuma mensagem enviada. Inicie a conversa abaixo.</p>
+    </div>
+    <form class="chat-compose" method="post" th:action="@{/chat/conversas/{id}/mensagens(id=${conversa.id})}">
+      <label for="texto">Mensagem<textarea id="texto" name="texto" rows="3" maxlength="2000" required placeholder="Escreva sua mensagem..." autocomplete="off"></textarea></label>
+      <button type="submit">Enviar mensagem ↗</button>
+    </form>
+    <small style="color:var(--muted)">As mensagens são atualizadas automaticamente.</small>
+  </section>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div><script th:src="@{/js/app.js}" defer></script><script th:src="@{/js/chat.js}" defer></script></body></html>

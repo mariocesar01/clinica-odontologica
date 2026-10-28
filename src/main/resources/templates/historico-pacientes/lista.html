@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta charset="UTF-8">
+    <title>Histórico Clínico</title>
+</head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1>Histórico Clínico dos Pacientes</h1>
+<p>
+    <a th:href="@{/agenda}">Minha agenda</a> |
+    <a th:href="@{/atendimentos}">Meus atendimentos</a> |
+    <a th:href="@{/home}">Início</a>
+</p>
+
+<form th:action="@{/historico-pacientes}" method="get">
+    <label>Pesquisar por nome:</label>
+    <input type="text" name="nome" th:value="${nomePesquisa}">
+    <button type="submit">Pesquisar</button>
+    <a th:href="@{/historico-pacientes}">Limpar</a>
+</form>
+
+<hr>
+<p th:if="${#lists.isEmpty(pacientes)}">Nenhum paciente encontrado.</p>
+<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(pacientes)}">
+    <thead>
+    <tr>
+        <th>Paciente</th>
+        <th>CPF</th>
+        <th>Data de nascimento</th>
+        <th>Ação</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="p : ${pacientes}">
+        <td th:text="${p.usuario.nome}"></td>
+        <td th:text="${p.cpf}"></td>
+        <td th:text="${#temporals.format(p.dataNascimento, 'dd/MM/yyyy')}"></td>
+        <td><a th:href="@{/historico-pacientes/{id}(id=${p.id})}">Ver histórico</a></td>
+    </tr>
+    </tbody>
+</table>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

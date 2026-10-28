@@ -1,0 +1,10 @@
+<!DOCTYPE html><html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Meus pagamentos • OdontoCare</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="with-shell"><div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout"><div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace"><div th:replace="~{fragments/shell :: topbar}"></div><div class="page-content">
+  <h1>Meus pagamentos</h1><p>Consulte suas cobranças e acompanhe a situação de cada pagamento.</p>
+  <div th:if="${!pagamentoConfigurado}" class="message-banner">O pagamento online está temporariamente indisponível. Para outras formas de pagamento, entre em contato com a recepção.</div>
+  <section class="section-panel"><div class="panel-head"><h2>Cobranças vinculadas às consultas</h2></div>
+    <p class="empty-state" th:if="${#lists.isEmpty(consultas)}">Você ainda não possui cobranças.</p>
+    <table th:if="${!#lists.isEmpty(consultas)}"><thead><tr><th>Data da consulta</th><th>Procedimento</th><th>Valor</th><th>Status</th><th>Ação</th></tr></thead>
+    <tbody><tr th:each="c : ${consultas}"><td th:text="${#temporals.format(c.dataHora,'dd/MM/yyyy HH:mm')}"></td><td th:text="${c.procedimento}"></td><td><strong th:text="|R$ ${#numbers.formatDecimal(c.valor,1,'POINT',2,'COMMA')}|"></strong></td><td th:text="${c.pagamento}"></td><td><a th:href="@{/paciente/pagamentos/consulta/{id}(id=${c.id})}">Detalhes e pagamento ›</a></td></tr></tbody></table>
+  </section>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div><script th:src="@{/js/app.js}" defer></script></body></html>

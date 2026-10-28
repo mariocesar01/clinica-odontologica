@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Meus dados</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content"><main class="conteudo"><nav><a th:href="@{/home}">← Voltar ao painel</a></nav>
+<h1>Meus dados</h1><dl>
+<dt>Nome</dt><dd th:text="${paciente.usuario.nome}"></dd>
+<dt>E-mail</dt><dd th:text="${paciente.usuario.email}"></dd>
+<dt>CPF</dt><dd th:text="${paciente.cpf}"></dd>
+<dt>Data de nascimento</dt><dd th:text="${#temporals.format(paciente.dataNascimento, 'dd/MM/yyyy')}"></dd>
+<dt>Telefone</dt><dd th:text="${paciente.telefone}"></dd>
+<dt>Endereço</dt><dd th:text="${paciente.endereco}"></dd>
+</dl></main></div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body></html>

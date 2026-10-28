@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><body>
+<aside class="sidebar" th:fragment="sidebar" aria-label="Menu principal">
+  <a th:href="@{/home}" class="brand" aria-label="Página inicial"><span class="brand-mark">✦</span><span class="brand-type"><strong>Odonto<span>Care</span></strong><small>Gestão da clínica</small></span></a>
+  <div class="sidebar-section-label">MENU PRINCIPAL</div>
+  <nav class="sidebar-nav" aria-label="Navegação do sistema">
+    <a data-path="/home" th:href="@{/home}"><span class="nav-icon">▦</span> Visão geral</a>
+    <th:block th:if="${usuarioAtual != null and usuarioAtual.perfil.name() == 'ADMINISTRADOR'}">
+      <div class="sidebar-section-label nested">GESTÃO</div>
+      <a data-path="/usuarios" th:href="@{/usuarios}"><span class="nav-icon">♙</span> Administradores</a>
+      <a data-path="/recepcionistas" th:href="@{/recepcionistas}"><span class="nav-icon">♧</span> Recepcionistas</a>
+      <a data-path="/pacientes" th:href="@{/pacientes}"><span class="nav-icon">♙</span> Pacientes</a>
+      <a data-path="/dentistas" th:href="@{/dentistas}"><span class="nav-icon">✚</span> Dentistas</a>
+      <a data-path="/procedimentos" th:href="@{/procedimentos}"><span class="nav-icon">◈</span> Procedimentos</a>
+      <a data-path="/escalas" th:href="@{/escalas}"><span class="nav-icon">▦</span> Escalas mensais</a>
+      <div class="sidebar-section-label nested">ANÁLISES</div>
+      <a data-path="/admin/relatorios" th:href="@{/admin/relatorios}"><span class="nav-icon">▥</span> Relatórios</a>
+    </th:block>
+    <th:block th:if="${usuarioAtual != null and usuarioAtual.perfil.name() == 'RECEPCIONISTA'}">
+      <div class="sidebar-section-label nested">OPERAÇÃO</div>
+      <a data-path="/agenda" th:href="@{/agenda}"><span class="nav-icon">▦</span> Agenda</a>
+      <a data-path="/consultas" th:href="@{/consultas}"><span class="nav-icon">◷</span> Consultas</a>
+      <a data-path="/recepcao/andamento" th:href="@{/recepcao/andamento}"><span class="nav-icon">◴</span> Andamento</a>
+      <a data-path="/pacientes" th:href="@{/pacientes}"><span class="nav-icon">♙</span> Pacientes</a>
+      <a data-path="/pagamentos" th:href="@{/pagamentos}"><span class="nav-icon">▤</span> Cobranças</a>
+      <a data-path="/chat" th:href="@{/chat}"><span class="nav-icon">◉</span> Mensagens</a>
+    </th:block>
+    <th:block th:if="${usuarioAtual != null and usuarioAtual.perfil.name() == 'DENTISTA'}">
+      <div class="sidebar-section-label nested">ATENDIMENTOS</div>
+      <a data-path="/agenda" th:href="@{/agenda}"><span class="nav-icon">▦</span> Minha agenda</a>
+      <a data-path="/atendimentos" th:href="@{/atendimentos}"><span class="nav-icon">◷</span> Meus atendimentos</a>
+      <a data-path="/historico-pacientes" th:href="@{/historico-pacientes}"><span class="nav-icon">▤</span> Histórico clínico</a>
+    </th:block>
+    <th:block th:if="${usuarioAtual != null and usuarioAtual.perfil.name() == 'PACIENTE'}">
+      <div class="sidebar-section-label nested">MINHA ÁREA</div>
+      <a data-path="/paciente/consultas" th:href="@{/paciente/consultas}"><span class="nav-icon">▦</span> Minhas consultas</a>
+      <a data-path="/paciente/pagamentos" th:href="@{/paciente/pagamentos}"><span class="nav-icon">▤</span> Meus pagamentos</a>
+      <a data-path="/chat" th:href="@{/chat}"><span class="nav-icon">◉</span> Mensagens</a>
+      <a data-path="/paciente/meus-dados" th:href="@{/paciente/meus-dados}"><span class="nav-icon">♙</span> Meus dados</a>
+    </th:block>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-help"><span class="help-mark">✦</span><strong>Clínica organizada</strong><small>Atendimentos e gestão em um só lugar.</small></div>
+    <form method="post" th:action="@{/logout}"><button type="submit" class="logout-button"><span class="nav-icon">↪</span> Sair da conta</button></form>
+  </div>
+</aside>
+<header class="topbar" th:fragment="topbar">
+  <div class="topbar-leading"><button type="button" id="mobile-menu-button" class="mobile-menu-button" aria-label="Abrir menu" aria-expanded="false">☰</button><span class="crumb-parent">OdontoCare</span><span class="crumb-sep">/</span><span class="crumb-page" id="crumb-page">Visão geral</span></div>
+  <div class="topbar-trailing"><span class="today-label" id="today-label"></span><span class="topbar-separator"></span><div class="account"><span class="avatar" th:text="${usuarioAtual != null ? #strings.substring(usuarioAtual.nome,0,1).toUpperCase() : 'U'}">U</span><span class="account-meta"><strong th:text="${usuarioAtual != null ? usuarioAtual.nome : 'Usuário'}">Usuário</strong><small th:text="${usuarioAtual != null ? (usuarioAtual.perfil.name() == 'ADMINISTRADOR' ? 'Administrador' : usuarioAtual.perfil.name() == 'RECEPCIONISTA' ? 'Recepcionista' : usuarioAtual.perfil.name() == 'DENTISTA' ? 'Dentista' : 'Paciente') : ''}"></small></span></div></div>
+</header>
+</body></html>

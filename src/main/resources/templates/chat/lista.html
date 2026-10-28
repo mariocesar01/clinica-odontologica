@@ -1,0 +1,11 @@
+<!DOCTYPE html><html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Chat com pacientes • OdontoCare</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="with-shell"><div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout"><div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace"><div th:replace="~{fragments/shell :: topbar}"></div><div class="page-content">
+  <h1>Chat com pacientes</h1><p>Acompanhe conversas e responda às mensagens recebidas.</p>
+  <section class="section-panel"><div class="panel-head"><h2>Iniciar conversa</h2></div>
+    <form class="filtros" method="post" th:action="@{/chat/conversas/iniciar}"><label>Paciente<select name="pacienteId" required><option value="">Selecione o paciente</option><option th:each="p : ${pacientes}" th:value="${p.id}" th:text="${p.usuario.nome}"></option></select></label><button type="submit">Abrir conversa</button></form>
+  </section>
+  <section class="section-panel"><div class="panel-head"><h2>Conversas</h2><span class="section-kicker" th:text="|${#lists.size(conversas)} conversas|">Conversas</span></div>
+    <p class="empty-state" th:if="${#lists.isEmpty(conversas)}">Nenhuma conversa iniciada.</p>
+    <div class="conversation-list" th:if="${!#lists.isEmpty(conversas)}"><a class="conversation-item" th:each="c : ${conversas}" th:href="@{/chat/conversas/{id}(id=${c.id})}"><span class="conversation-avatar" th:text="${#strings.substring(c.paciente.usuario.nome,0,1).toUpperCase()}">J</span><span><strong th:text="${c.paciente.usuario.nome}">Paciente</strong><small th:text="|Iniciada em ${#temporals.format(c.criadaEm,'dd/MM/yyyy HH:mm')}|"></small></span><b>Ver conversa ›</b></a></div>
+  </section>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div><script th:src="@{/js/app.js}" defer></script></body></html>

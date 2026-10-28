@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Escalas dos Dentistas</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1>Escalas Mensais dos Dentistas</h1>
+<p><a class="action-link" th:href="@{/escalas/gerar}">Gerar escala mensal</a> | <a th:href="@{/home}">Início</a></p>
+<p th:if="${mensagem}" th:text="${mensagem}"></p>
+
+<form th:action="@{/escalas}" method="get">
+    <label>Ano:</label><input type="number" name="ano" th:value="${ano}" min="2020" required>
+    <label>Mês:</label><input type="number" name="mes" th:value="${mes}" min="1" max="12" required>
+    <button type="submit">Ver mês</button>
+</form>
+
+<hr>
+<p th:if="${#lists.isEmpty(escalas)}">Nenhuma escala cadastrada para este mês.</p>
+<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(escalas)}">
+<thead>
+<tr><th>Data</th><th>Dentista</th><th>Trabalho</th><th>Pausa</th><th>Status</th><th>Observação</th><th>Ações</th></tr>
+</thead>
+<tbody>
+<tr th:each="e : ${escalas}">
+    <td th:text="${#temporals.format(e.data, 'dd/MM/yyyy')}"></td>
+    <td th:text="${e.dentista.usuario.nome}"></td>
+    <td th:text="${e.horaInicio + ' - ' + e.horaFim}"></td>
+    <td th:text="${e.pausaInicio != null ? e.pausaInicio + ' - ' + e.pausaFim : 'Sem pausa'}"></td>
+    <td th:text="${e.status}"></td>
+    <td th:text="${e.observacao}"></td>
+    <td>
+        <a th:href="@{/escalas/editar/{id}(id=${e.id})}">Editar dia</a>
+        <form th:action="@{/escalas/excluir/{id}(id=${e.id})}" method="post" style="display:inline">
+            <button type="submit" onclick="return confirm('Deseja excluir esta escala?')">Excluir</button>
+        </form>
+    </td>
+</tr>
+</tbody>
+</table>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

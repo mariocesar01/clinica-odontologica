@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta charset="UTF-8">
+    <title>Histórico do Paciente</title>
+</head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1>Histórico Clínico</h1>
+<p><a th:href="@{/historico-pacientes}">Voltar aos pacientes</a> | <a th:href="@{/home}">Início</a></p>
+
+<h2 th:text="${paciente.usuario.nome}"></h2>
+<p><strong>CPF:</strong> <span th:text="${paciente.cpf}"></span></p>
+<p><strong>Data de nascimento:</strong> <span th:text="${#temporals.format(paciente.dataNascimento, 'dd/MM/yyyy')}"></span></p>
+<p><strong>Telefone:</strong> <span th:text="${paciente.telefone}"></span></p>
+
+<hr>
+<p th:if="${#lists.isEmpty(prontuarios)}">Nenhum prontuário registrado para este paciente.</p>
+
+<div th:each="p : ${prontuarios}">
+    <h3 th:text="${#temporals.format(p.consulta.dataHora, 'dd/MM/yyyy HH:mm')}"></h3>
+    <p><strong>Dentista:</strong> <span th:text="${p.consulta.dentista.usuario.nome}"></span></p>
+    <p><strong>Procedimento:</strong> <span th:text="${p.consulta.procedimento != null ? p.consulta.procedimento.nome : '-'}"></span></p>
+    <p><strong>Diagnóstico:</strong> <span th:text="${p.diagnostico}"></span></p>
+    <p><strong>Tratamento:</strong> <span th:text="${p.tratamento}"></span></p>
+    <p><strong>Observações clínicas:</strong> <span th:text="${p.observacoesClinicas}"></span></p>
+    <p>
+        <a th:href="@{/prontuarios/ver/{id}(id=${p.id})}">Ver prontuário</a>
+        <span th:if="${p.consulta.dentista.id == dentistaLogadoId}">
+            | <a th:href="@{/prontuarios/editar/{id}(id=${p.id})}">Editar</a>
+        </span>
+    </p>
+    <hr>
+</div>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

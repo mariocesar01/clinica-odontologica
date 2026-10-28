@@ -1,0 +1,11 @@
+<!DOCTYPE html><html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Entrar • OdontoCare</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="login-page"><div><section class="login-card">
+    <div class="login-logo"><span class="brand-mark">✦</span><div><strong>OdontoCare</strong><small>Gestão odontológica</small></div></div>
+    <h1>Bem-vindo de volta</h1><p class="intro">Acesse sua conta para continuar.</p>
+    <div th:if="${mensagemErro}" class="message-banner error" th:text="${mensagemErro}">Erro</div>
+    <form th:action="@{/login}" th:object="${login}" method="post">
+      <label for="email">E-mail<input id="email" type="email" th:field="*{email}" placeholder="seu@email.com" autocomplete="username" required autofocus></label>
+      <label for="senha">Senha<input id="senha" type="password" th:field="*{senha}" placeholder="Digite sua senha" autocomplete="current-password" required></label>
+      <button type="submit">Entrar no sistema</button>
+    </form>
+  </section><div class="login-footer">OdontoCare · Sistema de gestão odontológica</div></div></body></html>

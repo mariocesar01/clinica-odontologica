@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Administradores</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1>Administradores</h1>
+<p><a class="action-link" th:href="@{/usuarios/novo}">Cadastrar administrador</a> | <a th:href="@{/home}">Início</a></p>
+<p th:if="${mensagem}" th:text="${mensagem}"></p>
+<p th:if="${mensagemErro}" th:text="${mensagemErro}"></p>
+<p th:if="${#lists.isEmpty(usuarios)}">Nenhum administrador cadastrado.</p>
+<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(usuarios)}">
+    <thead><tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Ativo</th><th>Ações</th></tr></thead>
+    <tbody>
+    <tr th:each="u : ${usuarios}">
+        <td th:text="${u.id}"></td><td th:text="${u.nome}"></td><td th:text="${u.email}"></td>
+        <td th:text="${u.ativo ? 'Sim' : 'Não'}"></td>
+        <td>
+            <a th:href="@{/usuarios/editar/{id}(id=${u.id})}">Editar</a>
+            <form th:if="${usuarioLogado == null or usuarioLogado.id != u.id}"
+                  th:action="@{/usuarios/excluir/{id}(id=${u.id})}" method="post" style="display:inline">
+                <button type="submit" onclick="return confirm('Deseja excluir este administrador?')">Excluir</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

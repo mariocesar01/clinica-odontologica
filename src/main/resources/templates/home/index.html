@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Painel • OdontoCare</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="with-shell"><div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout"><div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace"><div th:replace="~{fragments/shell :: topbar}"></div><div class="page-content">
+  <section class="dashboard-hero">
+    <div><span class="hero-eyebrow" th:text="${usuario.perfil.name() == 'ADMINISTRADOR' ? 'PAINEL ADMINISTRATIVO' : usuario.perfil.name() == 'RECEPCIONISTA' ? 'PAINEL DA RECEPÇÃO' : usuario.perfil.name() == 'DENTISTA' ? 'PAINEL CLÍNICO' : 'PORTAL DO PACIENTE'}">PAINEL</span>
+      <h1>Olá, <span th:text="${usuario.nome}">Usuário</span>!</h1>
+      <p th:text="${usuario.perfil.name() == 'ADMINISTRADOR' ? 'Acompanhe os indicadores e administre os recursos da clínica.' : usuario.perfil.name() == 'RECEPCIONISTA' ? 'Organize a agenda, receba os pacientes e acompanhe o dia de atendimento.' : usuario.perfil.name() == 'DENTISTA' ? 'Acompanhe sua agenda, consulte históricos e registre atendimentos.' : 'Consulte seus agendamentos, acompanhe pagamentos e fale com a recepção.'}">Bem-vindo.</p>
+    </div><div class="hero-date"><strong id="hero-day"></strong><span id="hero-month"></span></div>
+  </section>
+  <div class="metrics-grid" th:if="${usuario.perfil.name() == 'ADMINISTRADOR'}">
+    <div class="metric-card primary-metric"><div class="metric-top">Pacientes cadastrados <span class="metric-icon">♙</span></div><strong th:text="${painel.pacientes}">0</strong><small>Cadastros ativos e históricos</small></div>
+    <div class="metric-card"><div class="metric-top">Dentistas <span class="metric-icon">✚</span></div><strong th:text="${painel.dentistas}">0</strong><small>Profissionais registrados</small></div>
+    <div class="metric-card"><div class="metric-top">Recebido hoje <span class="metric-icon">↗</span></div><strong style="font-size:24px" th:text="|R$ ${#numbers.formatDecimal(painel.recebido,1,'POINT',2,'COMMA')}|">R$ 0,00</strong><small>Pagamentos confirmados</small></div>
+    <div class="metric-card"><div class="metric-top">Cobranças pendentes <span class="metric-icon">▤</span></div><strong th:text="${painel.cobrancasPendentes}">0</strong><small>Clínica inteira</small></div>
+  </div>
+  <div class="metrics-grid" th:if="${usuario.perfil.name() == 'RECEPCIONISTA'}">
+    <div class="metric-card primary-metric"><div class="metric-top">Consultas de hoje <span class="metric-icon">▦</span></div><strong th:text="${painel.consultasHoje}">0</strong><small>Todos os dentistas</small></div>
+    <div class="metric-card"><div class="metric-top">Agendadas <span class="metric-icon">◷</span></div><strong th:text="${painel.agendadas}">0</strong><small>Aguardando chegada</small></div>
+    <div class="metric-card"><div class="metric-top">Em andamento <span class="metric-icon">◴</span></div><strong th:text="${painel.aguardando}">0</strong><small>Na recepção ou consultório</small></div>
+    <div class="metric-card"><div class="metric-top">Finalizadas <span class="metric-icon">✓</span></div><strong th:text="${painel.realizadas}">0</strong><small>Atendimentos realizados hoje</small></div>
+  </div>
+  <div class="metrics-grid" th:if="${usuario.perfil.name() == 'DENTISTA'}">
+    <div class="metric-card primary-metric"><div class="metric-top">Minha agenda hoje <span class="metric-icon">▦</span></div><strong th:text="${painel.consultasHoje}">0</strong><small>Consultas do seu dia</small></div>
+    <div class="metric-card"><div class="metric-top">Agendadas <span class="metric-icon">◷</span></div><strong th:text="${painel.agendadas}">0</strong><small>Próximos atendimentos</small></div>
+    <div class="metric-card"><div class="metric-top">Aguardando / em atendimento <span class="metric-icon">◴</span></div><strong th:text="${painel.aguardando}">0</strong><small>Pacientes em atendimento</small></div>
+    <div class="metric-card"><div class="metric-top">Concluídas <span class="metric-icon">✓</span></div><strong th:text="${painel.realizadas}">0</strong><small>Hoje</small></div>
+  </div>
+  <div class="metrics-grid" th:if="${usuario.perfil.name() == 'PACIENTE'}">
+    <div class="metric-card primary-metric"><div class="metric-top">Minhas consultas <span class="metric-icon">▦</span></div><strong th:text="${painel.consultasHoje}">0</strong><small>Histórico de consultas</small></div>
+    <div class="metric-card"><div class="metric-top">Agendadas <span class="metric-icon">◷</span></div><strong th:text="${painel.agendadas}">0</strong><small>Consultas programadas</small></div>
+    <div class="metric-card"><div class="metric-top">Realizadas <span class="metric-icon">✓</span></div><strong th:text="${painel.realizadas}">0</strong><small>Atendimentos concluídos</small></div>
+    <div class="metric-card"><div class="metric-top">Próximos agendamentos <span class="metric-icon">◉</span></div><strong th:text="${#lists.size(painel.proximas)}">0</strong><small>Na sua agenda</small></div>
+  </div>
+  <div class="dashboard-columns">
+    <section class="section-panel">
+      <div class="panel-head"><h2 th:text="${usuario.perfil.name() == 'ADMINISTRADOR' ? 'Atividade de hoje' : usuario.perfil.name() == 'PACIENTE' ? 'Minhas próximas consultas' : 'Próximos atendimentos'}">Atendimentos</h2>
+        <a th:if="${usuario.perfil.name() == 'RECEPCIONISTA' or usuario.perfil.name() == 'DENTISTA'}" th:href="@{/agenda}">Ver agenda ›</a>
+        <a th:if="${usuario.perfil.name() == 'PACIENTE'}" th:href="@{/paciente/consultas}">Ver consultas ›</a>
+      </div>
+      <p class="empty-state" th:if="${#lists.isEmpty(painel.proximas)}">Nenhuma consulta pendente para exibir.</p>
+      <div class="upcoming-list" th:if="${!#lists.isEmpty(painel.proximas)}">
+        <div class="upcoming-item" th:each="c : ${painel.proximas}">
+          <span class="upcoming-time" th:text="${#temporals.format(c.dataHora, 'dd/MM HH:mm')}">09:00</span>
+          <span class="upcoming-detail"><strong th:text="${usuario.perfil.name() == 'PACIENTE' ? c.dentista.usuario.nome : c.paciente.usuario.nome}">Paciente</strong><small th:text="${c.procedimento != null ? c.procedimento.nome : 'Consulta odontológica'}">Procedimento</small></span>
+          <span class="upcoming-tag" th:text="${c.status}">AGENDADA</span>
+        </div>
+      </div>
+    </section>
+    <section class="section-panel"><div class="panel-head"><h2>Acesso rápido</h2></div>
+      <p class="panel-intro">Selecione uma atividade para continuar.</p>
+      <div class="panel-actions" th:if="${usuario.perfil.name() == 'ADMINISTRADOR'}">
+        <a th:href="@{/escalas}"><span>▦</span> Escalas mensais</a><a th:href="@{/admin/relatorios}"><span>▥</span> Relatórios</a><a th:href="@{/dentistas}"><span>✚</span> Dentistas</a><a th:href="@{/procedimentos}"><span>◈</span> Procedimentos</a>
+      </div>
+      <div class="panel-actions" th:if="${usuario.perfil.name() == 'RECEPCIONISTA'}">
+        <a th:href="@{/agenda}"><span>▦</span> Novo agendamento</a><a th:href="@{/recepcao/andamento}"><span>◴</span> Andamento</a><a th:href="@{/pacientes/novo}"><span>♙</span> Novo paciente</a><a th:href="@{/chat}"><span>◉</span> Mensagens</a>
+      </div>
+      <div class="panel-actions" th:if="${usuario.perfil.name() == 'DENTISTA'}">
+        <a th:href="@{/agenda}"><span>▦</span> Minha agenda</a><a th:href="@{/atendimentos}"><span>◷</span> Meus atendimentos</a><a th:href="@{/historico-pacientes}"><span>▤</span> Histórico clínico</a>
+      </div>
+      <div class="panel-actions" th:if="${usuario.perfil.name() == 'PACIENTE'}">
+        <a th:href="@{/paciente/consultas}"><span>▦</span> Minhas consultas</a><a th:href="@{/paciente/pagamentos}"><span>▤</span> Meus pagamentos</a><a th:href="@{/chat}"><span>◉</span> Falar com a recepção</a><a th:href="@{/paciente/meus-dados}"><span>♙</span> Meus dados</a>
+      </div>
+    </section>
+  </div>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script><script>const d=new Date();document.getElementById('hero-day').textContent=String(d.getDate()).padStart(2,'0');document.getElementById('hero-month').textContent=new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(d);</script>
+</body></html>

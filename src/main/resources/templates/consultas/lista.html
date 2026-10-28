@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Consultas</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1>Consultas</h1>
+<p>
+    <a class="action-link" th:href="@{/agenda}">Novo agendamento</a> |
+    <a th:href="@{/home}">Início</a>
+</p>
+<p th:if="${mensagem}" th:text="${mensagem}"></p>
+<p th:if="${mensagemErro}" th:text="${mensagemErro}"></p>
+<form class="filtros" method="get" th:action="@{/consultas}">
+<label>De<input type="date" name="inicio" th:value="${inicio}"></label>
+<label>Até<input type="date" name="fim" th:value="${fim}"></label>
+<label>Status<select name="status"><option value="">Todos</option><option th:each="s : ${todosStatus}" th:value="${s}" th:text="${s}" th:selected="${statusFiltro == s}"></option></select></label>
+<button type="submit">Filtrar</button><a th:href="@{/consultas}">Limpar</a>
+</form>
+<p th:if="${#lists.isEmpty(consultas)}">Nenhuma consulta cadastrada.</p>
+<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(consultas)}">
+<thead><tr><th>ID</th><th>Paciente</th><th>Dentista</th><th>Procedimento</th><th>Início</th><th>Fim</th><th>Status</th><th>Observações</th><th>Ações</th></tr></thead>
+<tbody><tr th:each="c : ${consultas}">
+    <td th:text="${c.id}"></td>
+    <td th:text="${c.paciente.usuario.nome}"></td>
+    <td th:text="${c.dentista.usuario.nome}"></td>
+    <td th:text="${c.procedimento != null ? c.procedimento.nome : '-'}"></td>
+    <td th:text="${#temporals.format(c.dataHora, 'dd/MM/yyyy HH:mm')}"></td>
+    <td th:text="${#temporals.format(c.dataHoraFim, 'dd/MM/yyyy HH:mm')}"></td>
+    <td th:text="${c.status}"></td>
+    <td th:text="${c.observacoes}"></td>
+    <td>
+        <span th:if="${c.status.name() == 'AGENDADA' or c.status.name() == 'CONFIRMADA'}">
+            <a th:href="@{/consultas/editar/{id}(id=${c.id})}">Editar</a>
+            <form th:action="@{/consultas/cancelar/{id}(id=${c.id})}" method="post" style="display:inline">
+                <button type="submit">Cancelar</button>
+            </form>
+        </span>
+        <span th:if="${c.status.name() == 'REALIZADA'}">-</span>
+    </td>
+</tr></tbody>
+</table>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

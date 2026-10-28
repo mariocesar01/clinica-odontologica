@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Pacientes</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1>Pacientes</h1>
+<p><a class="action-link" th:href="@{/pacientes/novo}">Cadastrar novo paciente</a> | <a th:href="@{/home}">Início</a></p>
+<p th:if="${mensagem}" th:text="${mensagem}"></p>
+<p th:if="${mensagemErro}" th:text="${mensagemErro}"></p>
+<form th:action="@{/pacientes/pesquisar}" method="get">
+    <label>Pesquisar por nome:</label>
+    <input type="text" name="nome" th:value="${nomePesquisa}">
+    <button type="submit">Pesquisar</button>
+    <a th:href="@{/pacientes}">Limpar</a>
+</form>
+<hr>
+<p th:if="${#lists.isEmpty(pacientes)}">Nenhum paciente cadastrado.</p>
+<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(pacientes)}">
+<thead><tr><th>ID</th><th>Nome</th><th>E-mail</th><th>CPF</th><th>Nascimento</th><th>Telefone</th><th>Endereço</th><th>Ações</th></tr></thead>
+<tbody>
+<tr th:each="p : ${pacientes}">
+    <td th:text="${p.id}"></td><td th:text="${p.usuario.nome}"></td><td th:text="${p.usuario.email}"></td>
+    <td th:text="${p.cpf}"></td><td th:text="${p.dataNascimento}"></td><td th:text="${p.telefone}"></td><td th:text="${p.endereco}"></td>
+    <td>
+        <a th:href="@{/pacientes/editar/{id}(id=${p.id})}">Editar</a>
+        <form th:action="@{/pacientes/excluir/{id}(id=${p.id})}" method="post" style="display:inline">
+            <button type="submit" onclick="return confirm('Deseja excluir este paciente?')">Excluir</button>
+        </form>
+    </td>
+</tr>
+</tbody>
+</table>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

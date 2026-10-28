@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Minhas consultas</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content"><main class="conteudo"><nav><a th:href="@{/home}">← Voltar ao painel</a> · <a th:href="@{/paciente/pagamentos}">Meus pagamentos</a> · <a th:href="@{/chat}">Chat</a></nav>
+<h1>Minhas consultas</h1>
+<table><thead><tr><th>Data</th><th>Dentista</th><th>Procedimento</th><th>Status</th><th>Pagamento</th></tr></thead><tbody>
+<tr th:each="c : ${consultas}">
+<td th:text="${#temporals.format(c.dataHora, 'dd/MM/yyyy HH:mm')}"></td>
+<td th:text="${c.dentista}"></td><td th:text="${c.procedimento}"></td><td th:text="${c.status}"></td>
+<td><a th:href="@{/paciente/pagamentos/consulta/{id}(id=${c.id})}" th:text="${c.pagamento}">Ver pagamento</a></td>
+</tr><tr th:if="${#lists.isEmpty(consultas)}"><td colspan="5">Você ainda não possui consultas cadastradas.</td></tr>
+</tbody></table></main></div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body></html>

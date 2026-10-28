@@ -1,0 +1,20 @@
+<!DOCTYPE html><html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Detalhes da cobrança • OdontoCare</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="with-shell"><div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout"><div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace"><div th:replace="~{fragments/shell :: topbar}"></div><div class="page-content">
+  <h1>Detalhes da cobrança</h1><p>Confira os dados antes de iniciar seu pagamento.</p>
+  <div class="message-banner error" th:if="${erro}" th:text="${erro}"></div><div class="message-banner" th:if="${mensagem}" th:text="${mensagem}"></div>
+  <div class="billing-layout">
+    <section class="section-panel"><div class="panel-head"><h2>Resumo da consulta</h2><span class="status-pill" th:attr="data-status=${statusPagamento.status}" th:text="${statusPagamento.status}"></span></div>
+      <dl><dt>Data e horário</dt><dd th:text="${#temporals.format(consulta.dataHora,'dd/MM/yyyy HH:mm')}"></dd><dt>Procedimento</dt><dd th:text="${consulta.procedimento == null ? 'Não informado' : consulta.procedimento.nome}"></dd><dt>Situação da consulta</dt><dd th:text="${consulta.status}"></dd><dt>Situação do pagamento</dt><dd th:text="${statusPagamento.status}"></dd></dl>
+      <div class="billing-total"><span>Valor da cobrança</span><strong th:text="|R$ ${#numbers.formatDecimal(consulta.valorProcedimento != null ? consulta.valorProcedimento : (consulta.procedimento == null ? 0 : consulta.procedimento.valor),1,'POINT',2,'COMMA')}|">R$ 0,00</strong></div>
+      <form method="post" th:if="${consulta.status.name() != 'CANCELADA' and consulta.procedimento != null and statusPagamento.status != 'PAGO' and statusPagamento.status != 'CANCELADO' and pagamentoConfigurado}" th:action="@{/paciente/consultas/{id}/pagar(id=${consulta.id})}" class="payment-form"><button type="submit">Prosseguir para pagamento seguro ↗</button></form>
+      <div class="message-banner" th:if="${!pagamentoConfigurado and statusPagamento.status == 'PENDENTE'}">Pagamento online temporariamente indisponível. Entre em contato com a recepção.</div>
+      <div class="message-banner" th:if="${statusPagamento.status == 'PAGO'}">Pagamento confirmado. Obrigado!</div>
+      <p class="payment-note">O pagamento é processado no ambiente seguro do Mercado Pago. A confirmação pode levar alguns instantes.</p>
+    </section>
+    <section class="section-panel"><div class="panel-head"><h2>Histórico de tentativas</h2></div><p class="empty-state" th:if="${#lists.isEmpty(tentativas)}">Nenhuma tentativa de pagamento registrada.</p>
+      <div class="payment-attempt" th:each="t : ${tentativas}"><div><strong th:text="${#temporals.format(t.criadaEm,'dd/MM/yyyy HH:mm')}"></strong><small th:text="${t.status}"></small></div>
+        <form method="post" th:if="${t.status.name() == 'PENDENTE' or t.status.name() == 'CRIADA'}" th:action="@{/paciente/tentativas/{id}/verificar(id=${t.id})}"><input type="hidden" name="consultaId" th:value="${consulta.id}"><button type="submit">Verificar status</button></form>
+      </div>
+    </section>
+  </div>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div><script th:src="@{/js/app.js}" defer></script></body></html>

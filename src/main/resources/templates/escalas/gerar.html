@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Gerar Escala Mensal</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1>Gerar Escala Mensal</h1>
+<p th:if="${mensagemErro}" th:text="${mensagemErro}"></p>
+
+<form th:action="@{/escalas/gerar}" th:object="${escalaMensal}" method="post" class="record-form">
+    <p><label>Dentista:</label><br>
+        <select th:field="*{dentistaId}" required>
+            <option value="">Selecione</option>
+            <option th:each="d : ${dentistas}" th:value="${d.id}" th:text="${d.usuario.nome + ' - CRO ' + d.cro}"></option>
+        </select>
+    </p>
+    <p><label>Ano:</label><br><input type="number" th:field="*{ano}" min="2020" required></p>
+    <p><label>Mês:</label><br><input type="number" th:field="*{mes}" min="1" max="12" required></p>
+
+    <fieldset>
+        <legend>Dias de trabalho</legend>
+        <label><input type="checkbox" th:field="*{segunda}"> Segunda</label><br>
+        <label><input type="checkbox" th:field="*{terca}"> Terça</label><br>
+        <label><input type="checkbox" th:field="*{quarta}"> Quarta</label><br>
+        <label><input type="checkbox" th:field="*{quinta}"> Quinta</label><br>
+        <label><input type="checkbox" th:field="*{sexta}"> Sexta</label><br>
+        <label><input type="checkbox" th:field="*{sabado}"> Sábado</label>
+    </fieldset>
+
+    <p><label>Início do expediente:</label><br><input type="time" th:field="*{horaInicio}" step="1800" required></p>
+    <p><label>Fim do expediente:</label><br><input type="time" th:field="*{horaFim}" step="1800" required></p>
+    <p><label>Início da pausa:</label><br><input type="time" th:field="*{pausaInicio}" step="1800"></p>
+    <p><label>Fim da pausa:</label><br><input type="time" th:field="*{pausaFim}" step="1800"></p>
+
+    <button type="submit">Gerar escala</button> <a th:href="@{/escalas}">Cancelar</a>
+</form>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

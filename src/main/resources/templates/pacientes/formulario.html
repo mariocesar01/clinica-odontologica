@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Paciente</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1 th:text="${paciente.id == null ? 'Cadastrar paciente' : 'Editar paciente'}"></h1>
+<p th:if="${mensagemErro}" th:text="${mensagemErro}"></p>
+<form th:action="@{/pacientes/salvar}" th:object="${paciente}" method="post" class="record-form">
+    <input type="hidden" th:field="*{id}">
+    <input type="hidden" th:field="*{usuario.id}">
+    <p><label>Nome:</label><br><input type="text" th:field="*{usuario.nome}" required></p>
+    <p><label>E-mail:</label><br><input type="email" th:field="*{usuario.email}" required></p>
+    <p><label>Senha:</label><br><input type="password" th:field="*{usuario.senha}" th:required="${paciente.id == null}">
+        <small th:if="${paciente.id != null}">Deixe em branco para manter a senha atual.</small></p>
+    <p><label>CPF:</label><br><input type="text" th:field="*{cpf}" required></p>
+    <p th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></p>
+    <p><label>Data de nascimento:</label><br><input type="date" th:field="*{dataNascimento}" required></p>
+    <p th:if="${#fields.hasErrors('dataNascimento')}" th:errors="*{dataNascimento}"></p>
+    <p><label>Telefone:</label><br><input type="text" th:field="*{telefone}"></p>
+    <p><label>Endereço:</label><br><input type="text" th:field="*{endereco}"></p>
+    <button type="submit">Salvar</button>
+    <a th:href="@{/pacientes}">Cancelar</a>
+</form>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

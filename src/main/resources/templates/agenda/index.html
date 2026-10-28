@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Agenda • OdontoCare</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="with-shell"><div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout"><div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace"><div th:replace="~{fragments/shell :: topbar}"></div><div class="page-content">
+  <h1 th:text="${usuario.perfil.name() == 'DENTISTA' ? 'Minha agenda' : 'Agenda da clínica'}">Agenda</h1><p th:text="${usuario.perfil.name() == 'DENTISTA' ? 'Consulte seus compromissos e acesse o atendimento.' : 'Selecione uma data para consultar a equipe escalada e marcar horários.'}">Agenda diária</p>
+  <div th:if="${mensagemErro}" class="message-banner error" th:text="${mensagemErro}"></div>
+  <form class="filtros" method="get" th:action="@{/agenda}" id="agenda-filtros">
+    <label>Data<input type="date" name="data" th:value="${dataSelecionada}" required onchange="this.form.submit()"></label>
+    <label th:if="${usuario.perfil.name() == 'RECEPCIONISTA' and !#lists.isEmpty(escalasDoDia)}">Dentista
+      <select name="dentistaId" onchange="this.form.submit()"><option value="">Selecione</option><option th:each="e : ${escalasDoDia}" th:value="${e.dentista.id}" th:text="${e.dentista.usuario.nome}" th:selected="${dentistaSelecionadoId == e.dentista.id}"></option></select>
+    </label>
+    <input type="hidden" th:if="${usuario.perfil.name() == 'DENTISTA' and dentistaSelecionadoId != null}" name="dentistaId" th:value="${dentistaSelecionadoId}">
+    <label th:if="${usuario.perfil.name() == 'RECEPCIONISTA' and dentistaSelecionadoId != null}">Procedimento
+      <select name="procedimentoId" onchange="this.form.submit()"><option value="">Selecione</option><option th:each="p : ${procedimentos}" th:value="${p.id}" th:text="|${p.nome} · ${p.duracaoMinutos} min|" th:selected="${procedimentoSelecionadoId == p.id}"></option></select>
+    </label><button type="submit">Consultar</button>
+  </form>
+  <section class="section-panel"><div class="panel-head"><h2>Equipe escalada</h2><span class="section-kicker" th:text="${#temporals.format(dataSelecionada,'dd/MM/yyyy')}">Data</span></div>
+    <p class="empty-state" th:if="${#lists.isEmpty(escalasDoDia)}">Nenhum dentista escalado para esta data.</p>
+    <div class="scale-chips" th:if="${!#lists.isEmpty(escalasDoDia)}"><article class="scale-chip" th:each="e : ${escalasDoDia}"><span class="scale-avatar">✚</span><span><strong th:text="${e.dentista.usuario.nome}">Dentista</strong><small th:text="|${e.horaInicio}–${e.horaFim}|"></small><small th:if="${e.pausaInicio != null}" th:text="|Pausa ${e.pausaInicio}–${e.pausaFim}|"></small></span></article></div>
+  </section>
+  <section class="section-panel" th:if="${consultasDoDia != null or consultasMarcadas != null}"><div class="panel-head"><h2>Consultas do dia</h2></div>
+    <th:block th:with="lista=${consultasDoDia != null ? consultasDoDia : consultasMarcadas}">
+      <p class="empty-state" th:if="${#lists.isEmpty(lista)}">Nenhuma consulta registrada para este dentista na data selecionada.</p>
+      <table th:if="${!#lists.isEmpty(lista)}"><thead><tr><th>Início</th><th>Fim</th><th>Paciente</th><th>Procedimento</th><th>Status</th><th th:if="${usuario.perfil.name() == 'DENTISTA'}">Ação</th></tr></thead>
+        <tbody><tr th:each="c : ${lista}"><td th:text="${#temporals.format(c.dataHora,'HH:mm')}"></td><td th:text="${#temporals.format(c.dataHoraFim,'HH:mm')}"></td><td th:text="${c.paciente.usuario.nome}"></td><td th:text="${c.procedimento != null ? c.procedimento.nome : '—'}"></td><td th:text="${c.status}"></td>
+          <td th:if="${usuario.perfil.name() == 'DENTISTA'}"><a th:href="@{/historico-pacientes/{id}(id=${c.paciente.id})}">Histórico</a> <a th:if="${podeAtenderData}" th:href="@{/prontuarios/atender/{id}(id=${c.id})}"> · Atender</a></td>
+        </tr></tbody></table>
+    </th:block>
+  </section>
+  <section class="section-panel" th:if="${horariosDisponiveis != null}"><div class="panel-head"><h2>Horários disponíveis</h2><span class="section-kicker">Inícios possíveis</span></div>
+    <p class="panel-intro">Os horários já consideram duração, intervalos e consultas existentes.</p>
+    <p class="empty-state" th:if="${#lists.isEmpty(horariosDisponiveis)}">Não há horários disponíveis para este procedimento nesta data.</p>
+    <div class="slot-grid" th:if="${!#lists.isEmpty(horariosDisponiveis)}"><a class="slot" th:each="h : ${horariosDisponiveis}" th:href="@{/consultas/novo(dentistaId=${dentistaSelecionadoId},procedimentoId=${procedimentoSelecionadoId},dataHora=${h.inicio})}"><strong th:text="${h.horaInicio}">09:00</strong><small th:text="|até ${h.horaFim}|"></small><span>Agendar ›</span></a></div>
+  </section>
+  <p th:if="${usuario.perfil.name() == 'RECEPCIONISTA' and dentistaSelecionadoId != null and procedimentoSelecionadoId == null}">Selecione um procedimento para visualizar os horários disponíveis.</p>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div><script th:src="@{/js/app.js}" defer></script></body></html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Atendimento</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1 th:text="${prontuarioForm.id == null ? 'Registrar Atendimento' : 'Editar Prontuário'}"></h1>
+<p th:if="${mensagemErro}" th:text="${mensagemErro}"></p>
+
+<div th:if="${consulta != null}">
+    <p><strong>Paciente:</strong> <span th:text="${consulta.paciente.usuario.nome}"></span></p>
+    <p><strong>Data:</strong> <span th:text="${#temporals.format(consulta.dataHora, 'dd/MM/yyyy')}"></span></p>
+    <p><strong>Horário:</strong> <span th:text="${#temporals.format(consulta.dataHora, 'HH:mm')}"></span></p>
+    <p><strong>Procedimento:</strong> <span th:text="${consulta.procedimento != null ? consulta.procedimento.nome : '-'}"></span></p>
+    <p><a th:href="@{/historico-pacientes/{id}(id=${consulta.paciente.id})}">Ver histórico clínico do paciente</a></p>
+</div>
+
+<form th:action="@{/prontuarios/salvar}" th:object="${prontuarioForm}" method="post" class="record-form">
+    <input type="hidden" th:field="*{id}">
+    <input type="hidden" th:field="*{consultaId}">
+    <p th:if="${#fields.hasErrors('consultaId')}" th:errors="*{consultaId}"></p>
+
+    <p><label>Diagnóstico:</label><br>
+        <textarea th:field="*{diagnostico}" rows="4" cols="60"></textarea></p>
+
+    <p><label>Tratamento realizado:</label><br>
+        <textarea th:field="*{tratamento}" rows="4" cols="60"></textarea></p>
+
+    <p><label>Observações clínicas:</label><br>
+        <textarea th:field="*{observacoesClinicas}" rows="5" cols="60"></textarea></p>
+
+    <button type="submit">Salvar atendimento</button>
+    <a th:if="${dataConsulta != null}" th:href="@{/agenda(data=${dataConsulta})}">Cancelar</a>
+</form>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

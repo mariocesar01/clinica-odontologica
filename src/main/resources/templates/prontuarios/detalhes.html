@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Prontuário</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1>Prontuário</h1>
+<p>
+    <a th:href="@{/historico-pacientes/{id}(id=${prontuario.consulta.paciente.id})}">Histórico do paciente</a> |
+    <a th:href="@{/atendimentos}">Meus atendimentos</a> |
+    <a th:href="@{/home}">Início</a>
+</p>
+
+<p><strong>Paciente:</strong> <span th:text="${prontuario.consulta.paciente.usuario.nome}"></span></p>
+<p><strong>Data do atendimento:</strong> <span th:text="${#temporals.format(prontuario.consulta.dataHora, 'dd/MM/yyyy HH:mm')}"></span></p>
+<p><strong>Dentista:</strong> <span th:text="${prontuario.consulta.dentista.usuario.nome}"></span></p>
+<p><strong>Procedimento:</strong> <span th:text="${prontuario.consulta.procedimento != null ? prontuario.consulta.procedimento.nome : '-'}"></span></p>
+<hr>
+<p><strong>Diagnóstico:</strong><br><span th:text="${prontuario.diagnostico}"></span></p>
+<p><strong>Tratamento:</strong><br><span th:text="${prontuario.tratamento}"></span></p>
+<p><strong>Observações clínicas:</strong><br><span th:text="${prontuario.observacoesClinicas}"></span></p>
+<p><strong>Registrado em:</strong> <span th:text="${#temporals.format(prontuario.dataRegistro, 'dd/MM/yyyy HH:mm')}"></span></p>
+
+<p th:if="${podeEditar}">
+    <a th:href="@{/prontuarios/editar/{id}(id=${prontuario.id})}">Editar prontuário</a>
+</p>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

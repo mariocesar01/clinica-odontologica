@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/app.css}"><meta charset="UTF-8"><title>Procedimento</title></head>
+<body class="with-shell">
+<div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout">
+<div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace">
+<div th:replace="~{fragments/shell :: topbar}"></div>
+<div class="page-content">
+<h1 th:text="${procedimento.id == null ? 'Cadastrar procedimento' : 'Editar procedimento'}"></h1>
+<p th:if="${mensagemErro}" th:text="${mensagemErro}"></p>
+<form th:action="@{/procedimentos/salvar}" th:object="${procedimento}" method="post" class="record-form">
+    <input type="hidden" th:field="*{id}">
+    <p><label>Nome:</label><br><input type="text" th:field="*{nome}" required></p>
+    <p th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></p>
+    <p><label>Descrição:</label><br><textarea th:field="*{descricao}" rows="4" cols="50"></textarea></p>
+    <p><label>Valor:</label><br><input type="number" step="0.01" min="0" th:field="*{valor}" required></p>
+    <p th:if="${#fields.hasErrors('valor')}" th:errors="*{valor}"></p>
+    <p><label>Duração em minutos (múltiplos de 30):</label><br><input type="number" step="30" min="30" th:field="*{duracaoMinutos}" required></p>
+    <p><label><input type="checkbox" th:field="*{ativo}"> Ativo</label></p>
+    <button type="submit">Salvar</button> <a th:href="@{/procedimentos}">Cancelar</a>
+</form>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div>
+<script th:src="@{/js/app.js}" defer></script>
+</body>
+</html>

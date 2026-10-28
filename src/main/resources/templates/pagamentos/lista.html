@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Cobranças • OdontoCare</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="with-shell"><div class="mobile-overlay" id="mobile-overlay"></div><div class="app-layout"><div th:replace="~{fragments/shell :: sidebar}"></div><div class="workspace"><div th:replace="~{fragments/shell :: topbar}"></div><div class="page-content">
+  <h1>Cobranças</h1><p>As cobranças são geradas automaticamente no agendamento. Registre aqui os recebimentos presenciais.</p>
+  <div th:if="${mensagem}" class="message-banner" th:text="${mensagem}"></div><div th:if="${mensagemErro}" class="message-banner error" th:text="${mensagemErro}"></div>
+  <form class="filtros" method="get" th:action="@{/pagamentos}"><label>Status<select name="status"><option value="">Todas as cobranças</option><option th:each="s : ${todosStatus}" th:value="${s}" th:text="${s}" th:selected="${statusFiltro == s}"></option></select></label><button type="submit">Filtrar</button><a th:href="@{/pagamentos}">Limpar</a></form>
+  <section class="section-panel"><div class="panel-head"><h2>Controle de pagamentos</h2><span class="section-kicker" th:text="|${#lists.size(pagamentos)} cobranças|">Cobranças</span></div>
+    <p class="empty-state" th:if="${#lists.isEmpty(pagamentos)}">Nenhuma cobrança registrada.</p>
+    <table th:if="${!#lists.isEmpty(pagamentos)}"><thead><tr><th>Consulta</th><th>Paciente</th><th>Procedimento</th><th>Valor</th><th>Status</th><th>Forma</th><th>Ação</th></tr></thead><tbody>
+      <tr th:each="p : ${pagamentos}"><td th:text="|#${p.consulta.id}|"></td><td th:text="${p.consulta.paciente.usuario.nome}"></td><td th:text="${p.consulta.procedimento == null ? '—' : p.consulta.procedimento.nome}"></td><td th:text="|R$ ${#numbers.formatDecimal(p.valor,1,'POINT',2,'COMMA')}|"></td><td th:text="${p.status}"></td><td th:text="${p.formaPagamento == null ? '—' : p.formaPagamento}"></td><td>
+        <form th:if="${p.status.name() == 'PENDENTE' and not temTentativaOnline[p.id]}" method="post" th:action="@{/pagamentos/registrar/{id}(id=${p.id})}"><select name="formaPagamento" aria-label="Forma de pagamento" required><option value="">Forma de pagamento</option><option th:each="f : ${formasPagamento}" th:value="${f}" th:text="${f}"></option></select><button type="submit">Registrar recebimento</button></form>
+        <span th:if="${p.status.name() == 'PENDENTE' and temTentativaOnline[p.id]}">Pagamento online iniciado</span><span th:if="${p.status.name() != 'PENDENTE'}">—</span>
+      </td></tr>
+    </tbody></table>
+  </section>
+</div><footer class="app-footer">OdontoCare <span>•</span> Sistema de gestão odontológica</footer></div></div><script th:src="@{/js/app.js}" defer></script></body></html>
